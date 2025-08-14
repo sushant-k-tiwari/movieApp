@@ -1,0 +1,34 @@
+import { icons } from "@/constants/icons";
+import React from "react";
+import { Image, StyleSheet, TextInput, View } from "react-native";
+
+interface Props {
+  placeholder: string;
+  onPress: () => void;
+}
+const SearchBar = ({ onPress, placeholder }: Props) => {
+  return (
+    <View className="flex-row items-center bg-dark-200 rounded-full px-5 py-4">
+      <Image
+        source={icons.search}
+        className="size-5"
+        resizeMode="contain"
+        tintColor={"#AB8BFF"}
+      />
+      <TextInput
+        placeholder={placeholder}
+        onPress={onPress}
+        className="flex-1 ml-2 text-white"
+        onChangeText={() => {}}
+        placeholderTextColor={"#AB8BFF"}
+        keyboardType="default"
+        autoCapitalize="words"
+        autoCorrect={false}
+      />
+    </View>
+  );
+};
+
+export default SearchBar;
+
+const styles = StyleSheet.create({});
