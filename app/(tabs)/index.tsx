@@ -25,7 +25,7 @@ export default function Index() {
               onPress={() => {
                 router.push("/search");
               }}
-              placeholder="Search for a movie"
+              placeholder="Search for a movie or TV show" 
             />
           </View>
         </View>

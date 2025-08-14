@@ -16,6 +16,7 @@ const SearchBar = ({ onPress, placeholder }: Props) => {
         tintColor={"#AB8BFF"}
       />
       <TextInput
+        style={{ fontFamily: "Montserrat-Regular" }}
         placeholder={placeholder}
         onPress={onPress}
         className="flex-1 ml-2 text-white"
