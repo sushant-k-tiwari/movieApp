@@ -16,7 +16,7 @@ const TabIcon = ({ icon, title, focused }: TabIconProps) => {
     return (
       <ImageBackground
         source={images.highlight}
-        className="flex flex-row w-full flex-1 min-w-[100px] min-h-16 mt-4 items-center justify-center rounded-full overflow-hidden"
+        className="flex flex-row w-full flex-1 min-w-[112px] min-h-16 mt-4 items-center justify-center rounded-full overflow-hidden"
       >
         <Image source={icon} tintColor="#151312" className="size-5" />
         <Text className="text-secondary font-semibold ml-2 text-base">
@@ -46,7 +46,7 @@ const _layout = () => {
           justifyContent: "center",
         },
         tabBarStyle: {
-          // overflow: "hidden",
+          overflow: "hidden",
           backgroundColor: "#0F0D23",
           elevation: 0,
           borderRadius: 50,
