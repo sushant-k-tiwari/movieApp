@@ -1,50 +1,90 @@
-# Welcome to your Expo app 👋
+# MovieApp
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native movie application built with Expo Router and NativeWind.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Search for movies and TV shows
+- View movie details
+- Modern UI with Tailwind CSS
+- Responsive design
 
+## Setup
+
+### Prerequisites
+
+- Node.js (v18 or higher)
+- Expo CLI
+- Android Studio / Xcode (for mobile development)
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
    ```bash
    npm install
    ```
 
-2. Start the app
+### Environment Setup
 
+**Important**: You need to set up an OMDb API key to use this application.
+
+1. Get a free API key from [OMDb API](http://www.omdbapi.com/)
+2. Create a `.env` file in the root directory:
    ```bash
-   npx expo start
+   # .env
+   EXPO_PUBLIC_OMDB_API_KEY=your_actual_api_key_here
    ```
+3. Replace `your_actual_api_key_here` with your actual API key
+4. **Important**: After creating the `.env` file, restart your development server
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Running the App
 
 ```bash
-npm run reset-project
+# Start the development server
+npm start
+
+# Run on Android
+npm run android
+
+# Run on iOS
+npm run ios
+
+# Run on web
+npm run web
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Project Structure
 
-## Learn more
+- `app/` - Expo Router pages and layouts
+- `components/` - Reusable React components
+- `services/` - API services and custom hooks
+- `constants/` - App constants and assets
+- `interfaces/` - TypeScript type definitions
 
-To learn more about developing your project with Expo, look at the following resources:
+## Technologies Used
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- React Native
+- Expo Router
+- NativeWind (Tailwind CSS for React Native)
+- TypeScript
+- OMDb API
 
-## Join the community
+## Troubleshooting
 
-Join our community of developers creating universal apps.
+If you see "OMDb API key is required" error:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Make sure you have created a `.env` file
+2. Verify your API key is correct
+3. **Restart the development server** after adding the `.env` file
+4. Check that the `.env` file is in the root directory (same level as `package.json`)
+
+### Common Issues
+
+- **API key not working**: Make sure you're using the correct environment variable name: `EXPO_PUBLIC_OMDB_API_KEY`
+- **Still getting errors after adding .env**: You must restart the development server after creating/modifying the `.env` file
+- **Invalid API key**: Verify your API key at [OMDb API](http://www.omdbapi.com/) - it should be a longer string, not just numbers
+
+## License
+
+MIT
