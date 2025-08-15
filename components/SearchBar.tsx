@@ -1,12 +1,30 @@
 import { icons } from "@/constants/icons";
-import React from "react";
-import { Image, StyleSheet, TextInput, View } from "react-native";
+import React, { useState } from "react";
+import { Image, TextInput, View } from "react-native";
 
 interface Props {
   placeholder: string;
   onPress: () => void;
+  onSubmitText?: (text: string) => void;
 }
-const SearchBar = ({ onPress, placeholder }: Props) => {
+
+const SearchBar = ({ onPress, placeholder, onSubmitText }: Props) => {
+  const [searchText, setSearchText] = useState("");
+
+  const handleSubmit = () => {
+    if (onSubmitText) {
+      onSubmitText(searchText.trim());
+    }
+  };
+
+  const handleChangeText = (text: string) => {
+    setSearchText(text);
+    // If text is cleared, notify parent to reset search results
+    if (onSubmitText && !text.trim()) {
+      onSubmitText("");
+    }
+  };
+
   return (
     <View className="flex-row items-center bg-dark-200 rounded-full px-6 py-2">
       <Image
@@ -20,7 +38,10 @@ const SearchBar = ({ onPress, placeholder }: Props) => {
         placeholder={placeholder}
         onPress={onPress}
         className="flex-1 ml-2 text-white"
-        onChangeText={() => {}}
+        onChangeText={handleChangeText}
+        value={searchText}
+        onSubmitEditing={handleSubmit}
+        returnKeyType="search"
         placeholderTextColor={"#AB8BFF"}
         keyboardType="default"
         autoCapitalize="words"
@@ -31,5 +52,3 @@ const SearchBar = ({ onPress, placeholder }: Props) => {
 };
 
 export default SearchBar;
-
-const styles = StyleSheet.create({});

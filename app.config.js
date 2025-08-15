@@ -1,0 +1,48 @@
+import "dotenv/config";
+
+export default {
+  expo: {
+    name: "MovieStar",
+    slug: "movieApp",
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./assets/icons/icon.png",
+    scheme: "movieapp",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    ios: {
+      supportsTablet: true,
+    },
+    android: {
+      adaptiveIcon: {
+        foregroundImage: "./assets/icons/icon.png",
+        backgroundColor: "#ffffff",
+      },
+      edgeToEdgeEnabled: true,
+    },
+    web: {
+      bundler: "metro",
+      output: "static",
+      favicon: "./assets/icons/icon.png",
+    },
+    plugins: [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          image: "./assets/images/splash-icon.png",
+          imageWidth: 200,
+          resizeMode: "contain",
+          backgroundColor: "#ffffff",
+        },
+      ],
+      "expo-font",
+    ],
+    experiments: {
+      typedRoutes: true,
+    },
+    extra: {
+      omdbApiKey: process.env.EXPO_MOVIE_API_KEY || process.env.OMDB_API_KEY,
+    },
+  },
+};
