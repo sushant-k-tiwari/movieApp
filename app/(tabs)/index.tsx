@@ -1,3 +1,4 @@
+import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
@@ -27,18 +28,19 @@ export default function Index() {
   return (
     <View className="flex-1 bg-primary">
       <StatusBar barStyle="light-content" />
-      <Image source={images.bg} className="absolute w-full  z-0" />
+      <Image source={images.bg} className="absolute w-full h-full z-0" />
 
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ height: "100%", marginBottom: 10 }}
+        contentContainerStyle={{ paddingBottom: 20 }}
       >
-        <View className="flex-1 px-5">
+        <View className="px-5">
           <Image
             source={icons.logo}
             className="w-12 h-10 z-10 mx-auto mt-20 mb-5"
           />
+
           {moviesLoading ? (
             <ActivityIndicator
               size="large"
@@ -46,51 +48,48 @@ export default function Index() {
               className="mt-10 self-center"
             />
           ) : moviesError ? (
-            <Text>
+            <Text className="text-white text-center mt-10">
               Error:{" "}
               {typeof moviesError === "string"
                 ? moviesError
                 : moviesError?.message}
             </Text>
           ) : (
-            <View className="flex-1 mt-5">
+            <View className="mt-5">
               <SearchBar
                 onPress={() => {
                   router.push("/search");
                 }}
                 placeholder="Search for a movie or TV show"
               />
-              <>
-                <Text
-                  className="text-lg text-white mt-5 mb-3"
-                  style={{ fontFamily: "Montserrat-SemiBold" }}
-                >
-                  Latest Movies
-                </Text>
 
+              <Text
+                className="text-lg text-white mt-5 mb-3"
+                style={{ fontFamily: "Montserrat-SemiBold" }}
+              >
+                Latest Movies
+              </Text>
+              <>
                 <FlatList
-                  horizontal
-                  data={movies?.slice(0, 10)}
+                  data={movies}
                   renderItem={({ item }) => {
                     return (
                       <View className="flex-1 p-2 ">
-                        <View className="justify-center items-center">
-                          <Image
-                            source={{ uri: item.Poster }}
-                            className="w-[200px] h-[300px] gap-4 rounded-xl "
-                          />
-                          <Text
-                            className="text-white text-lg text-wrap w-[200px] text-center"
-                            style={{
-                              fontFamily: "Montserrat-Medium",
-                            }}
-                          >
-                            {item.Title}
-                          </Text>
-                        </View>
+                        <MovieCard {...item} />
                       </View>
                     );
                   }}
+                  numColumns={3}
+                  columnWrapperStyle={{
+                    justifyContent: "flex-start",
+                    gap: 14,
+                    paddingRight: 5,
+                    marginBottom: 10,
+                  }}
+                  showsVerticalScrollIndicator={false}
+                  keyExtractor={(item) => item.imdbID.toString()}
+                  className="mt-2 pb-20"
+                  scrollEnabled={false}
                 />
               </>
             </View>

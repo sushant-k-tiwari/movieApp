@@ -66,7 +66,7 @@ const _layout = () => {
             {/* Glass blur */}
             <BlurView
               tint="dark"
-              intensity={0}
+              intensity={10}
               style={StyleSheet.absoluteFill}
             />
             {/* Gloss overlay */}
