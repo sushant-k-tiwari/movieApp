@@ -28,7 +28,11 @@ export default function Index() {
   return (
     <View className="flex-1 bg-primary">
       <StatusBar barStyle="light-content" />
-      <Image source={images.bg} className="absolute w-full h-full z-0" />
+      <Image
+        source={images.bg}
+        className="flex-1 absolute w-full z-0"
+        resizeMode="cover"
+      />
 
       <ScrollView
         className="flex-1"
@@ -48,7 +52,7 @@ export default function Index() {
               className="mt-10 self-center"
             />
           ) : moviesError ? (
-            <Text className="text-white text-center mt-10">
+            <Text className="text-red-500 text-center mt-10">
               Error:{" "}
               {typeof moviesError === "string"
                 ? moviesError
@@ -60,7 +64,7 @@ export default function Index() {
                 onPress={() => {
                   router.push("/search");
                 }}
-                placeholder="Search for a movie or TV show"
+                placeholder="Search for a movie or TV show..."
               />
 
               <Text
@@ -81,7 +85,7 @@ export default function Index() {
                   }}
                   numColumns={3}
                   columnWrapperStyle={{
-                    justifyContent: "flex-start",
+                    justifyContent: "center",
                     gap: 14,
                     paddingRight: 5,
                     marginBottom: 10,
