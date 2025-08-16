@@ -6,9 +6,17 @@ interface Props {
   placeholder: string;
   onPress: () => void;
   onSubmitText?: (text: string) => void;
+  value?: string;
+  onChangeText?: (text: string) => void;
 }
 
-const SearchBar = ({ onPress, placeholder, onSubmitText }: Props) => {
+const SearchBar = ({
+  onPress,
+  placeholder,
+  onSubmitText,
+  value,
+  onChangeText,
+}: Props) => {
   const [searchText, setSearchText] = useState("");
 
   const handleSubmit = () => {
@@ -38,8 +46,8 @@ const SearchBar = ({ onPress, placeholder, onSubmitText }: Props) => {
         placeholder={placeholder}
         onPress={onPress}
         className="flex-1 ml-2 text-white"
-        onChangeText={handleChangeText}
-        value={searchText}
+        onChangeText={onChangeText}
+        value={value}
         onSubmitEditing={handleSubmit}
         returnKeyType="search"
         placeholderTextColor={"#AB8BFF"}
