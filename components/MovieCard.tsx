@@ -3,10 +3,17 @@ import { Link } from "expo-router";
 import React from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
-const MovieCard = ({ Title, Poster, Year, imdbRating, imdbID }: Movie) => {
+const MovieCard = ({
+  Title,
+  Poster,
+  Year,
+  imdbRating,
+  imdbID,
+  Type,
+}: Movie) => {
   return (
     <Link href={`/movies/${imdbID}`} asChild>
-      <TouchableOpacity className="w-[120%]">
+      <TouchableOpacity className="w-32">
         <Image
           source={{ uri: Poster }}
           className="w-full h-52 rounded-lg"
@@ -34,6 +41,12 @@ const MovieCard = ({ Title, Poster, Year, imdbRating, imdbID }: Movie) => {
             style={{ fontFamily: "Montserrat-Medium" }}
           >
             {Year}
+          </Text>
+          <Text
+            className="text-xs mt-1 text-light-300 "
+            style={{ fontFamily: "Montserrat-SemiBold" }}
+          >
+            {Type.toUpperCase()}
           </Text>
         </View>
       </TouchableOpacity>
