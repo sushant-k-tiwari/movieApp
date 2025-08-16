@@ -14,7 +14,7 @@ export interface Movie {
   Awards: string;
   Poster: string;
   Metascore: string;
-  imdbRating: string;
+  imdbRating: number;
   imdbVotes: string;
   imdbID: string;
   Type: string;
@@ -26,7 +26,20 @@ export interface Movie {
   Error?: string; // Present if Response is "False"
 }
 
+// Interface for search results
+export interface SearchResult {
+  Title: string;
+  Year: string;
+  imdbID: string;
+  Type: string;
+  Poster: string;
+}
+
 const OMDB_API_KEY = "127801a8";
+
+// Simple in-memory cache
+const cache = new Map<string, { data: Movie[]; timestamp: number }>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const fetchMovieData = async (title: string): Promise<Movie[]> => {
   if (!OMDB_API_KEY) {
@@ -34,28 +47,93 @@ export const fetchMovieData = async (title: string): Promise<Movie[]> => {
     return [];
   }
 
-  const endpoint = title
-    ? `http://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${OMDB_API_KEY}&page=1`
-    : `http://www.omdbapi.com/?s=avengers&apikey=${OMDB_API_KEY}`;
+  // Check cache first
+  const cacheKey = title || "default";
+  const cached = cache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    return cached.data;
+  }
+
   try {
-    const response = await fetch(endpoint);
+    // First, search for movies
+    const searchEndpoint = title
+      ? `http://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${OMDB_API_KEY}&page=1`
+      : `http://www.omdbapi.com/?s=avengers&apikey=${OMDB_API_KEY}`;
 
-    if (!response.ok) {
-      console.error(`HTTP error! status: ${response.status}`);
+    const searchResponse = await fetch(searchEndpoint);
+    if (!searchResponse.ok) {
+      console.error(`HTTP error! status: ${searchResponse.status}`);
       return [];
     }
 
-    const data: { Search?: Movie[]; Response: string; Error?: string } =
-      await response.json();
+    const searchData: {
+      Search?: SearchResult[];
+      Response: string;
+      Error?: string;
+    } = await searchResponse.json();
 
-    if (data.Response === "True" && data.Search) {
-      return data.Search;
-    } else {
-      console.warn(`OMDb API Error: ${data.Error || "Movie not found."}`);
+    if (searchData.Response !== "True" || !searchData.Search) {
+      console.warn(`OMDb API Error: ${searchData.Error || "Movie not found."}`);
       return [];
     }
+
+    // Then, fetch detailed information for each movie in parallel
+    const searchResults = searchData.Search.slice(0, 9);
+    const detailPromises = searchResults.map(async (searchResult) => {
+      try {
+        const detailEndpoint = `http://www.omdbapi.com/?i=${searchResult.imdbID}&apikey=${OMDB_API_KEY}`;
+        const detailResponse = await fetch(detailEndpoint);
+
+        if (detailResponse.ok) {
+          const movieDetail: Movie = await detailResponse.json();
+          if (movieDetail.Response === "True") {
+            return movieDetail;
+          }
+        }
+      } catch (err) {
+        console.warn(`Error fetching details for ${searchResult.Title}:`, err);
+      }
+
+      // Return basic info if detailed fetch fails
+      return {
+        ...searchResult,
+        Rated: "",
+        Released: "",
+        Runtime: "",
+        Genre: "",
+        Director: "",
+        Writer: "",
+        Actors: "",
+        Plot: "",
+        Language: "",
+        Country: "",
+        Awards: "",
+        Metascore: "",
+        imdbRating: 0,
+        imdbVotes: "",
+        DVD: "",
+        BoxOffice: "",
+        Production: "",
+        Website: "",
+        Response: "True",
+      } as Movie;
+    });
+
+    // Wait for all detail requests to complete
+    const detailedMovies = await Promise.all(detailPromises);
+
+    // Cache the result
+    cache.set(cacheKey, { data: detailedMovies, timestamp: Date.now() });
+
+
+    return detailedMovies;
   } catch (err) {
     console.error("Error fetching movie data:", err);
     return [];
   }
+};
+
+// Function to clear cache if needed
+export const clearCache = () => {
+  cache.clear();
 };
