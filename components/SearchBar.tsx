@@ -1,5 +1,5 @@
 import { icons } from "@/constants/icons";
-import React, { useState } from "react";
+import React from "react";
 import { Image, TextInput, View } from "react-native";
 
 interface Props {
@@ -17,16 +17,10 @@ const SearchBar = ({
   value,
   onChangeText,
 }: Props) => {
-  const [searchText, setSearchText] = useState("");
-
-  const handleSubmit = () => {
-    if (onSubmitText) {
-      onSubmitText(searchText.trim());
-    }
-  };
-
   const handleChangeText = (text: string) => {
-    setSearchText(text);
+    if (onChangeText) {
+      onChangeText(text);
+    }
     // If text is cleared, notify parent to reset search results
     if (onSubmitText && !text.trim()) {
       onSubmitText("");
@@ -46,13 +40,12 @@ const SearchBar = ({
         placeholder={placeholder}
         onPress={onPress}
         className="flex-1 ml-2 text-white"
-        onChangeText={onChangeText}
+        onChangeText={handleChangeText}
         value={value}
-        onSubmitEditing={handleSubmit}
+        onSubmitEditing={() => {}}
         returnKeyType="search"
         placeholderTextColor={"#AB8BFF"}
         keyboardType="default"
-        autoCapitalize="words"
         autoCorrect={false}
       />
     </View>
