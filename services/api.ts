@@ -125,7 +125,6 @@ export const fetchMovieData = async (title: string): Promise<Movie[]> => {
     // Cache the result
     cache.set(cacheKey, { data: detailedMovies, timestamp: Date.now() });
 
-
     return detailedMovies;
   } catch (err) {
     console.error("Error fetching movie data:", err);
