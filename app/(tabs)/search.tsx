@@ -5,20 +5,24 @@ import { images } from "@/constants/images";
 import { fetchMovieData } from "@/services/api";
 import useFetch from "@/services/useFetch";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
   Image,
   StatusBar,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [failedSearches, setFailedSearches] = useState<Set<string>>(new Set());
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchQueryRef = useRef(searchQuery);
+  const failedSearchesRef = useRef(failedSearches);
 
   const {
     data: movies,
@@ -30,20 +34,54 @@ const Search = () => {
     return await fetchMovieData(searchQuery);
   }, false);
 
+  // Keep refs in sync with latest values
+  const refetchRef = useRef(refetch);
+  const resetRef = useRef(reset);
+  useEffect(() => {
+    refetchRef.current = refetch;
+  }, [refetch]);
+  useEffect(() => {
+    resetRef.current = reset;
+  }, [reset]);
+  useEffect(() => {
+    failedSearchesRef.current = failedSearches;
+  }, [failedSearches]);
+
+  // Function to retry a failed search
+  const retrySearch = useCallback(() => {
+    setFailedSearches((prev) => {
+      const normalized = searchQueryRef.current.trim().toLowerCase();
+      if (!prev.has(normalized)) return prev;
+      const newSet = new Set(prev);
+      newSet.delete(normalized);
+      return newSet;
+    });
+    setHasSearched(true);
+    refetchRef.current();
+  }, []);
+
   // Debounced search effect
   useEffect(() => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
 
-    if (searchQuery.trim()) {
+    const normalized = searchQuery.trim().toLowerCase();
+
+    if (normalized) {
+      // Check if this search query has already failed
+      if (failedSearchesRef.current.has(normalized)) {
+        return; // Don't search again for failed queries
+      }
+
       debounceRef.current = setTimeout(() => {
         setHasSearched(true);
-        refetch();
-      }, 1000); // 1 second delay
+        refetchRef.current();
+      }, 500); // 0.5 second delay
     } else {
       setHasSearched(false);
-      reset(); // Clear previous search results when search is cleared
+      setFailedSearches(new Set()); // Clear all failed searches when search is cleared
+      resetRef.current(); // Clear previous search results when search is cleared
     }
 
     return () => {
@@ -51,7 +89,55 @@ const Search = () => {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [searchQuery, refetch, reset]);
+  }, [searchQuery]);
+
+  // Update refs when searchQuery changes
+  useEffect(() => {
+    searchQueryRef.current = searchQuery;
+  }, [searchQuery]);
+
+  // Effect to track failed searches - only run when search results change
+  useEffect(() => {
+    if (
+      hasSearched &&
+      !moviesLoading &&
+      !moviesError &&
+      movies &&
+      movies.length === 0 &&
+      searchQueryRef.current.trim()
+    ) {
+      // Add this search query to failed searches, guard against duplicates
+      setFailedSearches((prev) => {
+        const normalized = searchQueryRef.current.trim().toLowerCase();
+        if (prev.has(normalized)) return prev;
+        const newSet = new Set(prev);
+        newSet.add(normalized);
+        return newSet;
+      });
+    }
+  }, [hasSearched, moviesLoading, moviesError, movies]);
+
+  // Clear failed searches when user starts typing a new query
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      // Clear failed searches for different queries
+      setFailedSearches((prev) => {
+        const newSet = new Set(prev);
+        // Remove entries that don't start with the current search query
+        // Also remove entries that are very similar (within 2 characters difference)
+        for (const failedSearch of newSet) {
+          const currentQuery = searchQuery.trim().toLowerCase();
+          if (
+            !failedSearch.startsWith(currentQuery) &&
+            Math.abs(failedSearch.length - currentQuery.length) > 2
+          ) {
+            newSet.delete(failedSearch);
+          }
+        }
+        return newSet;
+      });
+    }
+  }, [searchQuery]);
 
   return (
     <View className="flex-1 bg-primary">
@@ -179,6 +265,64 @@ const Search = () => {
                   >
                     Try searching with different keywords or check your spelling
                   </Text>
+                  <Text
+                    className="text-gray-400 text-center mt-2 px-8 text-sm"
+                    style={{ fontFamily: "Montserrat-Regular" }}
+                  >
+                    This search won&apos;t be repeated automatically
+                  </Text>
+                  <View className="mt-4">
+                    <TouchableOpacity
+                      onPress={retrySearch}
+                      className="bg-accent px-6 py-3 rounded-full"
+                    >
+                      <Text
+                        className="text-white font-medium"
+                        style={{ fontFamily: "Montserrat-Medium" }}
+                      >
+                        Retry Search
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+
+            {/* Show message when search is blocked due to previous failure */}
+            {searchQuery.trim() &&
+              failedSearches.has(searchQuery.trim().toLowerCase()) &&
+              !hasSearched && (
+                <View className="items-center py-10">
+                  <Ionicons
+                    name="information-circle"
+                    size={48}
+                    color="#AB8BFF"
+                    style={{ opacity: 0.7, marginBottom: 16 }}
+                  />
+                  <Text
+                    className="text-white text-lg text-center"
+                    style={{ fontFamily: "Montserrat-Medium" }}
+                  >
+                    No results found previously for &ldquo;{searchQuery}&rdquo;
+                  </Text>
+                  <Text
+                    className="text-gray-300 text-center mt-2 px-8"
+                    style={{ fontFamily: "Montserrat-Regular" }}
+                  >
+                    Try a different search term or modify your current query
+                  </Text>
+                  <View className="mt-4">
+                    <TouchableOpacity
+                      onPress={retrySearch}
+                      className="bg-accent px-6 py-3 rounded-full"
+                    >
+                      <Text
+                        className="text-white font-medium"
+                        style={{ fontFamily: "Montserrat-Medium" }}
+                      >
+                        Retry Search
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               )}
           </>
