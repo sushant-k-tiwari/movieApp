@@ -3,6 +3,7 @@ import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { fetchMovieData } from "@/services/api";
+import { searchtermUpdate } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -96,25 +97,40 @@ const Search = () => {
     searchQueryRef.current = searchQuery;
   }, [searchQuery]);
 
-  // Effect to track failed searches - only run when search results change
+  // Effect to track failed searches and update search terms - only run when search results change
   useEffect(() => {
-    if (
-      hasSearched &&
-      !moviesLoading &&
-      !moviesError &&
-      movies &&
-      movies.length === 0 &&
-      searchQueryRef.current.trim()
-    ) {
-      // Add this search query to failed searches, guard against duplicates
-      setFailedSearches((prev) => {
-        const normalized = searchQueryRef.current.trim().toLowerCase();
-        if (prev.has(normalized)) return prev;
-        const newSet = new Set(prev);
-        newSet.add(normalized);
-        return newSet;
-      });
-    }
+    const updateSearchTerm = async () => {
+      if (
+        hasSearched &&
+        !moviesLoading &&
+        !moviesError &&
+        movies &&
+        searchQueryRef.current.trim()
+      ) {
+        if (movies.length === 0) {
+          // Add this search query to failed searches, guard against duplicates
+          setFailedSearches((prev) => {
+            const normalized = searchQueryRef.current.trim().toLowerCase();
+            if (prev.has(normalized)) return prev;
+            const newSet = new Set(prev);
+            newSet.add(normalized);
+            return newSet;
+          });
+        } else {
+          // Update search term count when movies are found
+          const searchTerm = searchQueryRef.current.trim();
+          if (searchTerm && movies.length > 0) {
+            try {
+              await searchtermUpdate(searchTerm, movies[0]);
+            } catch (error) {
+              console.error("Failed to update search term:", error);
+            }
+          }
+        }
+      }
+    };
+
+    updateSearchTerm();
   }, [hasSearched, moviesLoading, moviesError, movies]);
 
   // Clear failed searches when user starts typing a new query
