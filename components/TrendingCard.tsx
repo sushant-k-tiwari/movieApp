@@ -1,11 +1,48 @@
+import { images } from "@/constants/images";
+import MaskedView from "@react-native-masked-view/masked-view";
+import { Link } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const TrendingCard = ({movie}:any) => {
+const TrendingCard = ({
+  movie: { title, poster, movie_id },
+  index,
+}: TrendingCardProps) => {
   return (
-    <View>
-      <Text>TrendingCard</Text>
-    </View>
+    <Link href={`/movies/${movie_id}`} asChild>
+      <TouchableOpacity className="w-32 relative pl-5 ">
+        <Image
+          source={{ uri: poster }}
+          className="w-32 h-48 rounded-lg"
+          resizeMode="cover"
+        />
+        <View className="absolute bottom-9 -left-3.5 px-2 py-1 rounded-full">
+          <MaskedView
+            maskElement={
+              <Text
+                className="text-white text-6xl"
+                style={{ fontFamily: "Montserrat-Bold" }}
+              >
+                {index + 1}
+              </Text>
+            }
+          >
+            <Image
+              source={images.rankingGradient}
+              className="size-14"
+              resizeMode="cover"
+            />
+          </MaskedView>
+        </View>
+        <Text
+          className="text-white text-sm mt-2"
+          style={{ fontFamily: "Montserrat-Bold" }}
+          numberOfLines={1}
+        >
+          {title}
+        </Text>
+      </TouchableOpacity>
+    </Link>
   );
 };
 
