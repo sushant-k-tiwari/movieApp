@@ -11,7 +11,6 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
-  StatusBar,
   Text,
   TouchableOpacity,
   View,
@@ -157,7 +156,6 @@ const Search = () => {
 
   return (
     <View className="flex-1 bg-primary">
-      <StatusBar barStyle="light-content" />
       <Image
         source={images.bg}
         className="flex-1 absolute w-full z-0"
