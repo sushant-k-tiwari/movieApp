@@ -3,7 +3,7 @@ import SearchBar from "@/components/SearchBar";
 import TrendingCard from "@/components/TrendingCard";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
-import { fetchMovieData, Movie } from "@/services/api";
+import { fetchMovieData } from "@/services/api";
 import { getTrendingMovies } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
@@ -12,7 +12,6 @@ import {
   FlatList,
   Image,
   ScrollView,
-  StatusBar,
   Text,
   View,
 } from "react-native";
@@ -65,7 +64,7 @@ export default function Index() {
               {typeof moviesError === "string"
                 ? moviesError
                 : moviesError?.message ||
-                  trendingError?.message ||
+                  trendingError?.toString() ||
                   "Unknown Error"}
             </Text>
           ) : (
