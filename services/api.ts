@@ -1,32 +1,3 @@
-export interface Movie {
-  Title: string;
-  Year: string;
-  Rated: string;
-  Released: string;
-  Runtime: string;
-  Genre: string;
-  Director: string;
-  Writer: string;
-  Actors: string;
-  Plot: string;
-  Language: string;
-  Country: string;
-  Awards: string;
-  Poster: string;
-  Metascore: string;
-  imdbRating: number;
-  imdbVotes: string;
-  imdbID: string;
-  Type: string;
-  DVD: string;
-  BoxOffice: string;
-  Production: string;
-  Website: string;
-  Response: string; // "True" or "False"
-  Error?: string; // Present if Response is "False"
-}
-
-// Interface for search results
 export interface SearchResult {
   Title: string;
   Year: string;
@@ -35,7 +6,7 @@ export interface SearchResult {
   Poster: string;
 }
 
-const OMDB_API_KEY = "127801a8";
+const OMDB_API_KEY = process.env.EXPO_PUBLIC_MOVIE_API_KEY;
 
 // Simple in-memory cache
 const cache = new Map<string, { data: Movie[]; timestamp: number }>();
@@ -135,4 +106,26 @@ export const fetchMovieData = async (title: string): Promise<Movie[]> => {
 // Function to clear cache if needed
 export const clearCache = () => {
   cache.clear();
+};
+
+export const fetchMovieDetails = async (
+  movieId: string
+): Promise<MovieDetails> => {
+  try {
+    const response = await fetch(
+      `https://api.themoviedb.org/3/movie/${movieId}?api_key=${OMDB_API_KEY}`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch movie details");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw error;
+  }
 };
