@@ -3,6 +3,7 @@ import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { fetchMovieData, Movie } from "@/services/api";
+import { getTrendingMovies } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useRouter } from "expo-router";
 import {
@@ -17,6 +18,13 @@ import {
 
 export default function Index() {
   const router = useRouter();
+
+  const {
+    data: trendingMovies,
+    loading: trendingLoading,
+    error: trendingError,
+  } = useFetch(getTrendingMovies);
+
   const {
     data: movies,
     loading: moviesLoading,
@@ -45,18 +53,20 @@ export default function Index() {
             className="w-12 h-10 z-10 mx-auto mt-20 mb-5"
           />
 
-          {moviesLoading ? (
+          {moviesLoading || trendingLoading ? (
             <ActivityIndicator
               size="large"
               color={"#0000FF"}
               className="mt-10 self-center"
             />
-          ) : moviesError ? (
+          ) : moviesError || trendingError ? (
             <Text className="text-red-500 text-center mt-10">
               Error:{" "}
               {typeof moviesError === "string"
                 ? moviesError
-                : moviesError?.message}
+                : moviesError?.message ||
+                  trendingError?.message ||
+                  "Unknown Error"}
             </Text>
           ) : (
             <View className="mt-5">
@@ -67,9 +77,28 @@ export default function Index() {
                 placeholder="Search for a movie or TV show..."
               />
 
+              {trendingMovies && (
+                <View className="mt-10">
+                  <Text
+                    className="text-lg text-white mb-3"
+                    style={{ fontFamily: "Montserrat-Bold" }}
+                  >
+                    Trending Movies
+                  </Text>
+                  <FlatList
+                    // horizontal
+                    data={trendingMovies}
+                    renderItem={({ item, index }) => {
+                      return <Text className="text-white">{item.title}</Text>;
+                    }}
+                    keyExtractor={(item) => item.movie_id}
+                  />
+                </View>
+              )}
+
               <Text
                 className="text-lg text-white mt-5 mb-3"
-                style={{ fontFamily: "Montserrat-SemiBold" }}
+                style={{ fontFamily: "Montserrat-Bold" }}
               >
                 Latest Movies
               </Text>
