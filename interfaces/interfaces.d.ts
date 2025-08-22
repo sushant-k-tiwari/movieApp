@@ -38,18 +38,18 @@ interface MovieDetails {
   adult: boolean;
   backdrop_path: string | null;
   belongs_to_collection: {
-    id: number;
+    id: string;
     name: string;
     poster_path: string;
     backdrop_path: string;
   } | null;
   budget: number;
   genres: {
-    id: number;
+    id: string;
     name: string;
   }[];
   homepage: string | null;
-  id: number;
+  id: string;
   imdb_id: string | null;
   original_language: string;
   original_title: string;
@@ -57,7 +57,7 @@ interface MovieDetails {
   popularity: number;
   poster_path: string | null;
   production_companies: {
-    id: number;
+    id: string;
     logo_path: string | null;
     name: string;
     origin_country: string;
