@@ -10,17 +10,17 @@ const TrendingCard = ({
 }: TrendingCardProps) => {
   return (
     <Link href={`/movies/${movie_id}`} asChild>
-      <TouchableOpacity className="w-32 relative pl-5 ">
+      <TouchableOpacity className="w-48 relative pl-5 ">
         <Image
           source={{ uri: poster }}
-          className="w-32 h-48 rounded-lg"
+          className="w-48 h-64 rounded-lg"
           resizeMode="cover"
         />
         <View className="absolute bottom-9 -left-3.5 px-2 py-1 rounded-full">
           <MaskedView
             maskElement={
               <Text
-                className="text-white text-6xl"
+                className="text-white text-6xl pl-3.5 pt-1"
                 style={{ fontFamily: "Montserrat-Bold" }}
               >
                 {index + 1}
