@@ -4,14 +4,7 @@ import { useSavedMovies } from "@/contexts/SavedMoviesContext";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router } from "expo-router";
 import React from "react";
-import {
-  FlatList,
-  Image,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 
 const Saved = () => {
   const { savedMovies, removeSavedMovie } = useSavedMovies();
@@ -77,16 +70,21 @@ const Saved = () => {
 
   return (
     <View className="flex-1 bg-primary">
-      <StatusBar barStyle="light-content" />
       <Image
         source={require("@/assets/images/bg.png")}
         className="flex-1 absolute w-full z-0"
         resizeMode="cover"
       />
+      <View className="w-full flex-row items-center justify-center ">
+        <Image
+          source={icons.logo}
+          className="w-12 h-10 z-10 mx-auto mt-20 mb-5"
+        />
+      </View>
       <View className="flex-1 z-10">
         <View className="pt-12 pb-6 px-4">
           <Text
-            className="text-white text-2xl font-bold"
+            className="text-white text-2xl"
             style={{ fontFamily: "Montserrat-Bold" }}
           >
             Saved Movies
