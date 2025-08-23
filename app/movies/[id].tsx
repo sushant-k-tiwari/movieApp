@@ -1,4 +1,6 @@
+import HeartIcon from "@/components/HeartIcon";
 import { icons } from "@/constants/icons";
+import { useSavedMovies } from "@/contexts/SavedMoviesContext";
 import { fetchMovieDetails } from "@/services/api";
 import useFetch from "@/services/useFetch";
 import { router, useLocalSearchParams } from "expo-router";
@@ -40,6 +42,7 @@ const MovieDetails = () => {
     loading,
     error,
   } = useFetch(() => fetchMovieDetails(id as string));
+  const { isMovieSaved, toggleSavedMovie } = useSavedMovies();
 
   if (loading) {
     return (
@@ -83,12 +86,22 @@ const MovieDetails = () => {
         </View>
 
         <View className="flex-col items-start justify-center mt-5 px-5">
-          <Text
-            className="text-white text-xl"
-            style={{ fontFamily: "Montserrat-Bold" }}
-          >
-            {movie?.Title}
-          </Text>
+          <View className="flex-row items-center justify-between w-full mb-2">
+            <Text
+              className="text-white text-xl flex-1 mr-3"
+              style={{ fontFamily: "Montserrat-Bold" }}
+            >
+              {movie?.Title}
+            </Text>
+            {movie && (
+              <HeartIcon
+                isSaved={isMovieSaved(movie.imdbID)}
+                onPress={() => toggleSavedMovie(movie)}
+                size={28}
+                savedColor="#ff4757"
+              />
+            )}
+          </View>
           <View className="flex-row items-center gap-x-2 mt-2 ">
             <Text
               className="text-light-200 text-sm"
@@ -144,79 +157,3 @@ const MovieDetails = () => {
 };
 
 export default MovieDetails;
-
-// {/* Movie Title */}
-// <View className="px-4 py-6">
-// <Text className="text-white text-2xl font-bold mb-2">
-//   {movie.Title}
-// </Text>
-
-// {/* Release Date and Runtime */}
-// <View className="flex-row items-center mb-4">
-//   {movie.Year && (
-//     <Text className="text-gray-300 mr-4">{movie.Year}</Text>
-//   )}
-//   {movie.Runtime && movie.Runtime !== "N/A" && (
-//     <Text className="text-gray-300">{movie.Runtime}</Text>
-//   )}
-// </View>
-
-// {/* Rating */}
-// <View className="flex-row items-center mb-4">
-//   <Text className="text-yellow-400 text-lg mr-2">★</Text>
-//   <Text className="text-white text-lg">
-//     {movie.imdbRating && movie.imdbRating > 0
-//       ? movie.imdbRating
-//       : "N/A"}
-//   </Text>
-// </View>
-
-// {/* Plot */}
-// {movie.Plot && movie.Plot !== "N/A" && (
-//   <View className="mb-4">
-//     <Text className="text-white text-lg font-semibold mb-2">
-//       Plot
-//     </Text>
-//     <Text className="text-gray-300 leading-6">{movie.Plot}</Text>
-//   </View>
-// )}
-
-// {/* Genre */}
-// {movie.Genre && movie.Genre !== "N/A" && (
-//   <View className="mb-4">
-//     <Text className="text-white text-lg font-semibold mb-2">
-//       Genre
-//     </Text>
-//     <View className="flex-row flex-wrap">
-//       {movie.Genre.split(", ").map((genre, index) => (
-//         <View
-//           key={index}
-//           className="bg-gray-700 px-3 py-1 rounded-full mr-2 mb-2"
-//         >
-//           <Text className="text-white text-sm">{genre}</Text>
-//         </View>
-//       ))}
-//     </View>
-//   </View>
-// )}
-
-// {/* Director */}
-// {movie.Director && movie.Director !== "N/A" && (
-//   <View className="mb-4">
-//     <Text className="text-white text-lg font-semibold mb-2">
-//       Director
-//     </Text>
-//     <Text className="text-gray-300">{movie.Director}</Text>
-//   </View>
-// )}
-
-// {/* Cast */}
-// {movie.Actors && movie.Actors !== "N/A" && (
-//   <View className="mb-4">
-//     <Text className="text-white text-lg font-semibold mb-2">
-//       Cast
-//     </Text>
-//     <Text className="text-gray-300">{movie.Actors}</Text>
-//   </View>
-// )}
-// </View>
