@@ -87,7 +87,7 @@ export default function Index() {
                   <FlatList
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    ItemSeparatorComponent={() => <View className="w-2" />}
+                    ItemSeparatorComponent={() => <View className="w-4" />}
                     data={trendingMovies}
                     renderItem={({ item, index }) => {
                       return <TrendingCard movie={item} index={index} />;
@@ -105,6 +105,7 @@ export default function Index() {
               </Text>
               <>
                 <FlatList
+                
                   data={movies}
                   renderItem={({ item }) => {
                     return (

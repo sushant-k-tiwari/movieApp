@@ -108,22 +108,26 @@ export const clearCache = () => {
   cache.clear();
 };
 
-export const fetchMovieDetails = async (
-  movieId: string
-): Promise<MovieDetails> => {
+export const fetchMovieDetails = async (movieId: string): Promise<Movie> => {
+  if (!OMDB_API_KEY) {
+    throw new Error("OMDb API key is required.");
+  }
+
   try {
     const response = await fetch(
-      `https://api.themoviedb.org/3/movie/${movieId}?api_key=${OMDB_API_KEY}`,
-      {
-        method: "GET",
-      }
+      `http://www.omdbapi.com/?i=${movieId}&apikey=${OMDB_API_KEY}`
     );
 
     if (!response.ok) {
       throw new Error("Failed to fetch movie details");
     }
 
-    const data = await response.json();
+    const data: Movie = await response.json();
+
+    if (data.Response !== "True") {
+      throw new Error(data.Error || "Movie not found");
+    }
+
     return data;
   } catch (error) {
     throw error;
